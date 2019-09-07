@@ -35,6 +35,22 @@ router.get('/users/:id' , async (req,res) => {
     } catch(e) {
         res.send(e)
     }
+})
+
+router.post('/users/login' ,  async (req,res) => {
+    try {
+        const user = await User.findByCredentials(req.body.email , req.body.password)
+        // const token = await user.generateAuthToken()
+        // res.send({user,token})
+        // res.send(user)
+        console.log("lk")
+        
+
+    } catch(e){
+        res.status(203).send(e)
+
+    }
+})
    
 
     // // console.log(req.params)
@@ -45,17 +61,36 @@ router.get('/users/:id' , async (req,res) => {
     // }).catch((error) => {
     //     res.send(error)
     // })
-})
+
 
 router.patch('/users/:id' , async (req,res) => {
+
+    const updates = Object.keys(req.body)
+    // console.log(updates)
+
     try {
-        const user = User.findByIdAndUpdate( req.params.id , req.body , { new : true , runValidators : true } )
+
+        //findbyidandupdate doesnnot allow midleware to work that's why we are not using it
+        // const user = await User.findByIdAndUpdate( req.params.id , req.body , { new : true , runValidators : true } )
+        const user = await User.findById(req.params.id)
+        updates.forEach((update) => {
+            //doubt -> why []
+            // console.log(update)
+            // console.log([update])
+            // console.log(user['email'])
+            // console.log(user.update)
+            // console.log(user[update])
+              user[update] = req.body[update]
+        })
+
+        await user.save()
+
         if (!user){
             return res.status(201).send('user not found')
         }
         res.send(user)
     } catch(e) {
-        res.status(201).send(e)
+        res.status(205).send(e)
     }
 })
 

@@ -2,7 +2,7 @@ const express = require('express')
 const Task = require('../models/tasks')
 const router = new express.Router()
 
-app.post('/tasks', async (req, res) => {
+router.post('/tasks', async (req, res) => {
 
     const task = new Task(req.body)
     try {
@@ -21,7 +21,7 @@ app.post('/tasks', async (req, res) => {
     // })
 })
 
- app.get('/tasks', async (req,res) => {
+ router.get('/tasks', async (req,res) => {
     try {
         const tasks = await Task.find({ })
         res.send(tasks)
