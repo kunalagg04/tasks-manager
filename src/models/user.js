@@ -54,17 +54,17 @@ const userSchema = new mongoose.Schema({
 //if we want to use middleware for purpoes like using bcrypt
 //we need to store object as schema and pass that scheme to user
 
-userSchema.statics.findByCredentials = async (email , password) => {
-    const user = await User.find({ email })
+userSchema.statics.findByCredentials = async (email, password) => {
+    const user = await User.findOne({ email })
 
-    if(!user){
-        throw new Error ('Login failed')
+    if (!user) {
+        throw new Error('Unable to login')
     }
 
-    const isMatch = await bcrypt.compare(password , user.password)
+    const isMatch = await bcrypt.compare(password, user.password)
 
-    if(!isMatch){
-        throw new Error ('Login Failed')
+    if (!isMatch) {
+        throw new Error('Unable to login')
     }
 
     return user
