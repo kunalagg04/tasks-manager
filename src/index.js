@@ -11,6 +11,12 @@ const app = express()
 //used for hosting webap on heroku
 const port = process.env.PORT || 3000
 
+
+// app.use((req,res,next) => {
+//     console.log("hi i am middleware")
+//     next()
+// })
+
 //to convert incoming json to an object
 app.use(express.json())
 app.use(userRouter)

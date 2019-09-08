@@ -44,7 +44,17 @@ const userSchema = new mongoose.Schema({
             }
         }
         
-    }
+    },
+
+    //we need to store tokens for user to ensure login
+    //tokens is an array of token objects
+    tokens : [{
+        token:{
+            type: String,
+            required: true
+
+        }
+    }]
 
     //https://mongoosejs.com/docs/schematypes.html --> contains info about all types of allowed props like type , minlength etc.
     
@@ -68,12 +78,15 @@ userSchema.statics.findByCredentials = async (email, password) => {
     }
 
     return user
+
 }
 
 //generating jwt
 userSchema.methods.generateAuthToken = async function(){
     const user = this
     const token = await jwt.sign({ _id : user._id.toString() }, 'hibc')
+    user.tokens = user.tokens.concat({ token })
+    await user.save()
     return token
 }
 
