@@ -62,6 +62,12 @@ const userSchema = new mongoose.Schema({
     timestamps : true
 })
 
+userSchema.virtual('tasks',{
+    ref : 'Tasks',
+    localField : '_id',
+    foreignField : 'owner'
+})
+
 //mongoose converts model into schema
 //if we want to use middleware for purpoes like using bcrypt
 //we need to store object as schema and pass that scheme to user
@@ -112,6 +118,14 @@ userSchema.pre('save' , async function(next){
     next()
 
 })
+
+userSchema.pre('remove' , async function(next){
+    const user = this
+    await Task.deleteMany({ owner : user._id })
+    next()
+
+})
+
 
 const User = mongoose.model('User', userSchema)
 
