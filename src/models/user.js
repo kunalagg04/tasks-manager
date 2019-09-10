@@ -119,11 +119,11 @@ userSchema.pre('save' , async function(next){
 
 })
 
+//to delete tasksd of user when he deletes his profile
 userSchema.pre('remove' , async function(next){
     const user = this
     await Task.deleteMany({ owner : user._id })
     next()
-
 })
 
 
