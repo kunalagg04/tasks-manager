@@ -16,41 +16,32 @@ router.post('/user', async (req,res) => {
     }
 })
 
-router.get('/users', auth , async (req,res) => {
+router.get('/users/me', auth , async (req,res) => {
     // User.find({ }).then((users) => {
     //    res.send(users)
        
     //     res.send(error)
     // })
-
-    try {
-        const users = await User.find({ })
-        res.send(users)
-    } catch(e) { 
-         res.status(201).send(e)
-    }
+    res.send(req.user)
 })
 
-router.get('/users/:id' , async (req,res) => {
-    try {
-        const _id = req.params._id
-        const user = await User.findById(_id)
-        res.send(user)
-    } catch(e) {
-        res.send(e)
-    }
-})
+// router.get('/users/:id' , async (req,res) => {
+//     try {
+//         const _id = req.params._id
+//         const user = await User.findById(_id)
+//         res.send(user)
+//     } catch(e) {
+//         res.send(e)
+//     }
+// })
 
 router.post('/users/login' ,  async (req,res) => {
     try {
         const user = await User.findByCredentials(req.body.email , req.body.password)
         const token = await user.generateAuthToken()
-        res.send({user,token})
-      
-      
-
+        res.send({user : user.getPublicProfile() ,token})
     } catch(e){
-        res.status(203).send(e)
+        res.status(203).send(e) 
 
     }
 })
@@ -97,14 +88,38 @@ router.patch('/users/:id' , async (req,res) => {
     }
 })
 
-router.delete('/users' , async (req,res) => {
+router.delete('/users/me', auth , async (req,res) => {
+    // try{
+    //     const r = await User.remove({ _id : req.user._id})
+    //     res.send(r.deletedCount)
+    // } catch(e){
+    //     res.status(201).send(e)
+    // }
+
     try{
-        const r = await User.remove({name : 'Kunal'})
-        res.send(r.deletedCount)
-    } catch(e){
-        res.status(201).send(e)
+        await req.user.remove()
+        res.send(req.user)
+    }
+    catch(e){
+        res.status(500).send()
     }
 })
+
+router.post('/users/logout' , auth , async (req,res) => {
+    try {
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token.token !== req.token
+        })
+        await req.user.save()
+        res.send()
+
+    }
+    catch (e) {
+        res.status(500).send()
+    }
+})
+
+ 
 
 
 

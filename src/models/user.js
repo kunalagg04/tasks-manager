@@ -58,6 +58,8 @@ const userSchema = new mongoose.Schema({
 
     //https://mongoosejs.com/docs/schematypes.html --> contains info about all types of allowed props like type , minlength etc.
     
+},{
+    timestamps : true
 })
 
 //mongoose converts model into schema
@@ -79,6 +81,14 @@ userSchema.statics.findByCredentials = async (email, password) => {
 
     return user
 
+}
+
+userSchema.methods.getPublicProfile = function () {
+    const user= this
+    const userObject = user.toObject()
+    delete userObject.password
+    delete userObject.tokens
+    return userObject
 }
 
 //generating jwt
